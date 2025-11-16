@@ -58,13 +58,6 @@ const server = app.listen(PORT, () => {
   console.log('    GET    /api/stats/by-studio                 - Statistics by studio');
   console.log('    GET    /api/stats/by-season                 - Statistics by season');
   console.log('');
-  console.log('  📅 Schedule');
-  console.log('    GET    /api/schedule                        - Full schedule (all days)');
-  console.log('    GET    /api/schedule?day=monday             - Schedule by day');
-  console.log('    GET    /api/schedule/today                  - Today schedule');
-  console.log('    GET    /api/schedule/upcoming                - Upcoming schedule (this week)');
-  console.log('    GET    /api/schedule/day/:day               - Schedule for specific day');
-  console.log('');
   console.log('  ℹ️  Info');
   console.log('    GET    /api/info/seasons                    - Daftar season & year');
   console.log('    GET    /api/health                          - Health check');

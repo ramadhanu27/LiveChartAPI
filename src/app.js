@@ -6,7 +6,6 @@ const allRoutes = require('./routes/allRoutes');
 const animeDetailRoutes = require('./routes/animeDetailRoutes');
 const movieDetailRoutes = require('./routes/movieDetailRoutes');
 const statsRoutes = require('./routes/statsRoutes');
-const scheduleRoutes = require('./routes/scheduleRoutes');
 
 const app = express();
 
@@ -74,7 +73,6 @@ app.use('/api/ova', ovaRoutes);
 app.use('/api/ovas', ovaRoutes);      // Alias untuk /api/ova
 app.use('/api/all', allRoutes);
 app.use('/api/stats', statsRoutes);
-app.use('/api/schedule', scheduleRoutes);
 app.use('/api/detail', animeDetailRoutes);
 app.use('/api/movies/detail', movieDetailRoutes);
 
