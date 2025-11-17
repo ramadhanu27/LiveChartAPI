@@ -1370,6 +1370,92 @@
           }
         });
       });
+
+      // --- Real-time Response Fetching ---
+      async function fetchAndDisplayResponse(endpoint, containerId, method = 'GET') {
+        try {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+
+          const statusCodeEl = container.querySelector('.status-code');
+          const preEl = container.querySelector('pre');
+          
+          if (!statusCodeEl || !preEl) return;
+
+          // Show loading state
+          statusCodeEl.innerHTML = '<strong>Status:</strong> <span class="status-ok">Loading...</span>';
+          preEl.textContent = 'Fetching data...';
+
+          const response = await fetch(`${API_BASE}${endpoint}`, {
+            method: method,
+            headers: { 'Accept': 'application/json' }
+          });
+
+          const data = await response.json();
+          const statusText = response.ok ? `${response.status} OK` : `${response.status} Error`;
+          const statusClass = response.ok ? 'status-ok' : 'status-error';
+
+          // Update status
+          statusCodeEl.innerHTML = `<strong>Status:</strong> <span class="${statusClass}">${statusText}</span>`;
+
+          // Format and display JSON
+          preEl.textContent = JSON.stringify(data, null, 2);
+          preEl.className = 'language-json json';
+
+          // Re-apply syntax highlighting
+          let text = preEl.innerHTML;
+          text = text.replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:');
+          text = text.replace(/: "([^"]*)"/g, ': <span class="string">"$1"</span>');
+          text = text.replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>');
+          text = text.replace(/: (true|false)/g, ': <span class="boolean">$1</span>');
+          text = text.replace(/: (null)/g, ': <span class="null">$1</span>');
+          preEl.innerHTML = text;
+        } catch (error) {
+          const container = document.getElementById(containerId);
+          if (!container) return;
+
+          const statusCodeEl = container.querySelector('.status-code');
+          const preEl = container.querySelector('pre');
+
+          if (statusCodeEl) {
+            statusCodeEl.innerHTML = `<strong>Status:</strong> <span class="status-error">Error</span>`;
+          }
+          if (preEl) {
+            preEl.textContent = JSON.stringify({
+              success: false,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            }, null, 2);
+          }
+        }
+      }
+
+      // --- Attach click handlers to response containers ---
+      document.addEventListener('click', function (e) {
+        const trigger = e.target.closest('.endpoint-url.interactive');
+        if (!trigger) return;
+
+        const targetId = trigger.dataset.target;
+        const responseContainer = document.querySelector(targetId);
+        
+        if (!responseContainer) return;
+
+        // Check if response was already fetched
+        if (!responseContainer.dataset.fetched) {
+          const endpoint = trigger.textContent.match(/\/[^\s]*/)?.[0] || '/';
+          const method = trigger.querySelector('.method')?.classList.contains('post') ? 'POST' : 'GET';
+          
+          // Fetch real-time data
+          fetchAndDisplayResponse(endpoint, targetId, method);
+          responseContainer.dataset.fetched = 'true';
+        }
+      });
+
+      // --- Auto-fetch critical endpoints on load ---
+      setTimeout(() => {
+        fetchAndDisplayResponse('/api/health', 'res-info-health', 'GET');
+        fetchAndDisplayResponse('/', 'res-info-root', 'GET');
+      }, 1000);
     });
   </script>
 </body>
