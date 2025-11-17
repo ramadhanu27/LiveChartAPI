@@ -8,6 +8,7 @@
     "build": "echo \"Build completed\"",
     "scrape": "node scraper.js",
     "dev": "node src/server.js",
+    "web": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
