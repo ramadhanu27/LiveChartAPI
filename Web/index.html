@@ -1,326 +1,389 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dokumentasi API LiveChart</title>
-    <style>
-        :root {
-            --latar: #fefefe;
-            --teks: #222;
-            --primer: #007bff;
-            --border: #ddd;
-            --latar-nav: #f9f9f9;
-            --latar-kode: #f4f4f4;
-            --kode: #c7254e;
-            --string: #080;
-            --number: #00f;
-            --key: #a31515;
-            --ok: #28a745;
-            --error: #dc3545;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dokumentasi API LiveChart</title>
+  <style>
+    :root {
+      --latar: #fefefe;
+      --teks: #222;
+      --primer: #007bff;
+      --border: #ddd;
+      --latar-nav: #f9f9f9;
+      --latar-kode: #f4f4f4;
+      --kode: #c7254e;
+      --string: #080;
+      --number: #00f;
+      --key: #a31515;
+      --ok: #28a745;
+      --error: #dc3545;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            background-color: var(--latar);
-            color: var(--teks);
-            line-height: 1.6;
-        }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      background-color: var(--latar);
+      color: var(--teks);
+      line-height: 1.6;
+    }
 
-        /* --- Sidebar Navigation --- */
-        nav.sidebar {
-            width: 280px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: var(--latar-nav);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            padding: 20px;
-            box-sizing: border-box;
-        }
-        nav.sidebar h1 {
-            font-size: 1.5rem;
-            margin: 0 0 20px 0;
-            color: var(--primer);
-        }
-        nav.sidebar ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        nav.sidebar li {
-            margin-bottom: 5px;
-        }
-        nav.sidebar li.group-title {
-            font-size: 0.9rem;
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            color: #555;
-            text-transform: uppercase;
-        }
-        nav.sidebar a {
-            text-decoration: none;
-            color: var(--teks);
-            display: block;
-            padding: 8px 12px;
-            border-radius: 5px;
-            font-size: 0.95rem;
-        }
-        nav.sidebar a:hover {
-            background-color: var(--border);
-        }
-        nav.sidebar a.active {
-            background-color: var(--primer);
-            color: var(--latar);
-            font-weight: bold;
-        }
+    /* --- Sidebar Navigation --- */
+    nav.sidebar {
+      width: 280px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background-color: var(--latar-nav);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 20px;
+      box-sizing: border-box;
+    }
 
-        /* --- Main Content --- */
-        main.content {
-            margin-left: 280px;
-            padding: 40px;
-            width: calc(100% - 280px);
-            box-sizing: border-box;
-        }
+    nav.sidebar h1 {
+      font-size: 1.5rem;
+      margin: 0 0 20px 0;
+      color: var(--primer);
+    }
 
-        section {
-            padding-top: 20px;
-            margin-bottom: 60px;
-        }
-        
-        h2 {
-            border-bottom: 2px solid var(--primer);
-            padding-bottom: 10px;
-            margin-top: 0;
-            font-size: 2rem;
-        }
+    nav.sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-        h3 {
-            font-size: 1.5rem;
-            margin-top: 40px;
-            margin-bottom: 15px;
-        }
+    nav.sidebar li {
+      margin-bottom: 5px;
+    }
 
-        p {
-            margin-bottom: 15px;
-        }
+    nav.sidebar li.group-title {
+      font-size: 0.9rem;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-bottom: 10px;
+      color: #555;
+      text-transform: uppercase;
+    }
 
-        /* --- Endpoint Styling --- */
-        .endpoint-url {
-            background-color: var(--latar-kode);
-            border: 1px solid var(--border);
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            font-size: 1.1rem;
-            word-break: break-all;
-        }
-        .endpoint-url.interactive {
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        .endpoint-url.interactive:hover {
-            background-color: #e9ecef;
-        }
-        .endpoint-url.interactive.active {
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-            border-color: var(--primer);
-        }
-        
-        .endpoint-url .method {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 5px;
-            color: var(--latar);
-            font-weight: bold;
-            margin-right: 15px;
-            font-size: 1rem;
-        }
-        .endpoint-url .get { background-color: #007bff; }
-        .endpoint-url .post { background-color: var(--ok); }
-        
-        .toggle-icon {
-            float: right;
-            font-weight: bold;
-            color: #777;
-        }
+    nav.sidebar a {
+      text-decoration: none;
+      color: var(--teks);
+      display: block;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 0.95rem;
+    }
 
-        /* --- Response Container --- */
-        .response-container {
-            display: none; /* Hidden by default */
-            border: 2px solid var(--primer);
-            border-top: none;
-            border-bottom-left-radius: 5px;
-            border-bottom-right-radius: 5px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        .response-container.visible {
-            display: block; /* Shown by JS */
-        }
-        
-        .response-container h4 {
-            margin: 0 0 15px 0;
-            font-size: 1.1rem;
-        }
+    nav.sidebar a:hover {
+      background-color: var(--border);
+    }
 
-        .status-code {
-            margin-bottom: 10px;
-            font-size: 1rem;
-        }
-        .status-ok {
-            color: var(--ok);
-            font-weight: bold;
-        }
-        .status-error {
-            color: var(--error);
-            font-weight: bold;
-        }
+    nav.sidebar a.active {
+      background-color: var(--primer);
+      color: var(--latar);
+      font-weight: bold;
+    }
+
+    /* --- Main Content --- */
+    main.content {
+      margin-left: 280px;
+      padding: 40px;
+      width: calc(100% - 280px);
+      box-sizing: border-box;
+    }
+
+    section {
+      padding-top: 20px;
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      border-bottom: 2px solid var(--primer);
+      padding-bottom: 10px;
+      margin-top: 0;
+      font-size: 2rem;
+    }
+
+    h3 {
+      font-size: 1.5rem;
+      margin-top: 40px;
+      margin-bottom: 15px;
+    }
+
+    p {
+      margin-bottom: 15px;
+    }
+
+    /* --- Endpoint Styling --- */
+    .endpoint-url {
+      background-color: var(--latar-kode);
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 1.1rem;
+      word-break: break-all;
+    }
+
+    .endpoint-url.interactive {
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .endpoint-url.interactive:hover {
+      background-color: #e9ecef;
+    }
+
+    .endpoint-url.interactive.active {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-color: var(--primer);
+    }
+
+    .endpoint-url .method {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 5px;
+      color: var(--latar);
+      font-weight: bold;
+      margin-right: 15px;
+      font-size: 1rem;
+    }
+
+    .endpoint-url .get {
+      background-color: #007bff;
+    }
+
+    .endpoint-url .post {
+      background-color: var(--ok);
+    }
+
+    .toggle-icon {
+      float: right;
+      font-weight: bold;
+      color: #777;
+    }
+
+    .endpoint-open-btn {
+      float: right;
+      margin-left: 10px;
+      font-weight: bold;
+      color: #007bff;
+      cursor: pointer;
+      text-decoration: none;
+      padding: 2px 8px;
+      border-radius: 3px;
+      transition: background-color 0.2s;
+    }
+
+    .endpoint-open-btn:hover {
+      background-color: #e9ecef;
+    }
+
+    /* --- Response Container --- */
+    .response-container {
+      display: none;
+      /* Hidden by default */
+      border: 2px solid var(--primer);
+      border-top: none;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .response-container.visible {
+      display: block;
+      /* Shown by JS */
+    }
+
+    .response-container h4 {
+      margin: 0 0 15px 0;
+      font-size: 1.1rem;
+    }
+
+    .status-code {
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .status-ok {
+      color: var(--ok);
+      font-weight: bold;
+    }
+
+    .status-error {
+      color: var(--error);
+      font-weight: bold;
+    }
 
 
-        /* --- Code Blocks --- */
-        pre {
-            background-color: var(--latar-kode);
-            border: 1px solid var(--border);
-            border-radius: 5px;
-            padding: 15px;
-            overflow-x: auto;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-            font-size: 0.95rem;
-            margin-top: 0;
-        }
-        code {
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-        }
-        pre code {
-            color: var(--teks);
-        }
-        pre.json .string { color: var(--string); }
-        pre.json .number { color: var(--number); }
-        pre.json .key { color: var(--key); }
-        pre.json .boolean, pre.json .null { color: var(--primer); }
-        
-        /* Inline code */
-        :not(pre) > code {
-            background-color: #fceef2;
-            color: var(--kode);
-            padding: 2px 5px;
-            border-radius: 3px;
-        }
+    /* --- Code Blocks --- */
+    pre {
+      background-color: var(--latar-kode);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 15px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 0.95rem;
+      margin-top: 0;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    pre code {
+      color: var(--teks);
+    }
+
+    pre.json .string {
+      color: var(--string);
+    }
+
+    pre.json .number {
+      color: var(--number);
+    }
+
+    pre.json .key {
+      color: var(--key);
+    }
+
+    pre.json .boolean,
+    pre.json .null {
+      color: var(--primer);
+    }
+
+    /* Inline code */
+    :not(pre)>code {
+      background-color: #fceef2;
+      color: var(--kode);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
 
 
-        /* --- Tables --- */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid var(--border);
-            padding: 10px 15px;
-            text-align: left;
-        }
-        th {
-            background-color: var(--latar-nav);
-            font-weight: bold;
-        }
-        td:first-child {
-            font-weight: bold;
-            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
-        }
+    /* --- Tables --- */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
 
-        /* --- Responsive Design --- */
-        @media (max-width: 900px) {
-            body {
-                flex-direction: column;
-            }
-            nav.sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                border-right: none;
-                border-bottom: 1px solid var(--border);
-            }
-            main.content {
-                margin-left: 0;
-                width: 100%;
-                padding: 20px;
-            }
-        }
-    </style>
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: 10px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: var(--latar-nav);
+      font-weight: bold;
+    }
+
+    td:first-child {
+      font-weight: bold;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+
+    /* --- Responsive Design --- */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+
+      nav.sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      main.content {
+        margin-left: 0;
+        width: 100%;
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-    <nav class="sidebar">
-        <h1>API LiveChart</h1>
-        <ul>
-            <li class="group-title">Dasar</li>
-            <li><a href="#memulai">Memulai</a></li>
-            <li><a href="#info">Info Sistem</a></li>
-            
-            <li class="group-title">Anime</li>
-            <li><a href="#anime-list">Daftar Anime</a></li>
-            <li><a href="#anime-detail">Detail Anime</a></li>
+  <nav class="sidebar">
+    <h1>API LiveChart</h1>
+    <ul>
+      <li class="group-title">Dasar</li>
+      <li><a href="#memulai">Memulai</a></li>
+      <li><a href="#info">Info Sistem</a></li>
 
-            <li class="group-title">Movie</li>
-            <li><a href="#movie-list">Daftar Movie</a></li>
-            <li><a href="#movie-detail">Detail Movie</a></li>
-            
-            <li class="group-title">OVA</li>
-            <li><a href="#ova-list">Daftar OVA</a></li>
-            
-            <li class="group-title">Lain-lain</li>
-            <li><a href="#all-list">Daftar Semua</a></li>
-            <li><a href="#statistik">Statistik</a></li>
-            <li><a href="#export">Export JSON</a></li>
-        </ul>
-    </nav>
+      <li class="group-title">Anime</li>
+      <li><a href="#anime-list">Daftar Anime</a></li>
+      <li><a href="#anime-detail">Detail Anime</a></li>
 
-    <main class="content">
-        <section id="memulai">
-            <h2>Memulai</h2>
-            <p>Selamat datang di dokumentasi API LiveChart Scraper. API ini mengambil data dari <code>livechart.me</code> dan menyajikannya melalui endpoint RESTful.</p>
-            <p>Server berjalan di <code>http://localhost:3000</code>.</p>
-            
-            <h3>Instalasi</h3>
-            <pre><code>npm install</code></pre>
+      <li class="group-title">Movie</li>
+      <li><a href="#movie-list">Daftar Movie</a></li>
+      <li><a href="#movie-detail">Detail Movie</a></li>
 
-            <h3>Menjalankan Server</h3>
-            <pre><code>npm start</code></pre>
-            
-            <h3>Struktur Respon (Sukses)</h3>
-            <p>Semua respon yang berhasil akan mengikuti format:</p>
-            <pre><code class="language-json json">{
+      <li class="group-title">OVA</li>
+      <li><a href="#ova-list">Daftar OVA</a></li>
+
+      <li class="group-title">Lain-lain</li>
+      <li><a href="#all-list">Daftar Semua</a></li>
+      <li><a href="#statistik">Statistik</a></li>
+      <li><a href="#export">Export JSON</a></li>
+    </ul>
+  </nav>
+
+  <main class="content">
+    <section id="memulai">
+      <h2>Memulai</h2>
+      <p>Selamat datang di dokumentasi API LiveChart Scraper. API ini mengambil data dari <code>livechart.me</code> dan
+        menyajikannya melalui endpoint RESTful.</p>
+      <p>Server berjalan di <code>http://localhost:3000</code>.</p>
+
+      <h3>Instalasi</h3>
+      <pre><code>npm install</code></pre>
+
+      <h3>Menjalankan Server</h3>
+      <pre><code>npm start</code></pre>
+
+      <h3>Struktur Respon (Sukses)</h3>
+      <p>Semua respon yang berhasil akan mengikuti format:</p>
+      <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [...],
   "<span class="key">"total"</span>": <span class="number">96</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>
 }</code></pre>
-            <h3>Struktur Respon (Error)</h3>
-            <p>Semua respon error akan mengikuti format:</p>
-            <pre><code class="language-json json">{
+      <h3>Struktur Respon (Error)</h3>
+      <p>Semua respon error akan mengikuti format:</p>
+      <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">false</span>,
   "<span class="key">"error"</span>": <span class="string">"Pesan error..."</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>
 }</code></pre>
-        </section>
+    </section>
 
-        <section id="info">
-            <h2>Info Sistem</h2>
-            
-            <h3>Status & Kredit API</h3>
-            <div class="endpoint-url interactive" data-target="#res-info-root"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /</div>
-            <div class="response-container" id="res-info-root">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+    <section id="info">
+      <h2>Info Sistem</h2>
+
+      <h3>Status & Kredit API</h3>
+      <div class="endpoint-url interactive" data-target="#res-info-root"><span class="toggle-icon">[ + ]</span><a
+          class="endpoint-open-btn" data-path="/" title="Buka di tab baru">🔗</a><span class="method get">GET</span> /
+      </div>
+      <div class="response-container" id="res-info-root">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"api"</span>": {
     "<span class="key">"name"</span>": <span class="string">"LiveChart API Scraper"</span>,
@@ -334,26 +397,29 @@
   "<span class="key">"endpoints"</span>": { ... },
   "<span class="key">"documentation"</span>": { ... }
 }</code></pre>
-            </div>
-            
-            <h3>Health Check</h3>
-            <div class="endpoint-url interactive" data-target="#res-info-health"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/health</div>
-            <div class="response-container" id="res-info-health">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Health Check</h3>
+      <div class="endpoint-url interactive" data-target="#res-info-health"><span class="toggle-icon">[ + ]</span><a
+          class="endpoint-open-btn" data-path="/api/health" title="Buka di tab baru">🔗</a><span
+          class="method get">GET</span> /api/health</div>
+      <div class="response-container" id="res-info-health">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"status"</span>": <span class="string">"ok"</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>,
   "<span class="key">"uptime"</span>": <span class="number">3601</span>
 }</code></pre>
-            </div>
-            
-            <h3>Musim & Tahun Tersedia</h3>
-            <div class="endpoint-url interactive" data-target="#res-info-seasons"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/info/seasons</div>
-            <div class="response-container" id="res-info-seasons">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Musim & Tahun Tersedia</h3>
+      <div class="endpoint-url interactive" data-target="#res-info-seasons"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/info/seasons</div>
+      <div class="response-container" id="res-info-seasons">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"seasons"</span>": [<span class="string">"winter"</span>, <span class="string">"spring"</span>, <span class="string">"summer"</span>, <span class="string">"fall"</span>],
@@ -362,14 +428,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Info Cache</h3>
-            <div class="endpoint-url interactive" data-target="#res-info-cache"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime/info/cache</div>
-            <div class="response-container" id="res-info-cache">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Info Cache</h3>
+      <div class="endpoint-url interactive" data-target="#res-info-cache"><span class="toggle-icon">[ + ]</span><a
+          class="endpoint-open-btn" data-path="/api/anime/info/cache" title="Buka di tab baru">🔗</a><span
+          class="method get">GET</span> /api/anime/info/cache</div>
+      <div class="response-container" id="res-info-cache">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"totalKeys"</span>": <span class="number">2</span>,
@@ -384,21 +452,43 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-        </section>
+      </div>
+    </section>
 
-        <section id="anime-list">
-            <h2>Anime (Daftar)</h2>
-            
-            <h3>Dapatkan Semua Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-list"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime</div>
-            <p>Mengambil daftar semua anime TV untuk musim dan tahun tertentu. Default ke musim saat ini jika tidak ada parameter.</p>
-            <h4>Parameter Kueri</h4>
-            <table><thead><tr><th>Parameter</th><th>Tipe</th><th>Deskripsi</th></tr></thead><tbody><tr><td><code>season</code></td><td>String</td><td>Opsional. Musim (<code>winter</code>, <code>spring</code>, <code>summer</code>, <code>fall</code>).</td></tr><tr><td><code>year</code></td><td>Integer</td><td>Opsional. Tahun (mis. <code>2025</code>).</td></tr></tbody></table>
-            <div class="response-container" id="res-anime-list">
-                <h4>Contoh Respon (dari <code>README.md</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+    <section id="anime-list">
+      <h2>Anime (Daftar)</h2>
+
+      <h3>Dapatkan Semua Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-list"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/anime</div>
+      <p>Mengambil daftar semua anime TV untuk musim dan tahun tertentu. Default ke musim saat ini jika tidak ada
+        parameter.</p>
+      <h4>Parameter Kueri</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Tipe</th>
+            <th>Deskripsi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>season</code></td>
+            <td>String</td>
+            <td>Opsional. Musim (<code>winter</code>, <code>spring</code>, <code>summer</code>, <code>fall</code>).</td>
+          </tr>
+          <tr>
+            <td><code>year</code></td>
+            <td>Integer</td>
+            <td>Opsional. Tahun (mis. <code>2025</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="response-container" id="res-anime-list">
+        <h4>Contoh Respon (dari <code>README.md</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [
     {
@@ -418,17 +508,38 @@
   "<span class="key">"cached"</span>": <span class="boolean">false</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
+      </div>
 
-            <h3>Urutkan Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-sort"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime/sort</div>
-            <p>Mengambil daftar anime yang diurutkan. Opsi sortir valid: <code>rating</code>, <code>title</code>, <code>episodes</code>, <code>airdates</code>.</p>
-            <h4>Parameter Kueri</h4>
-            <table><tbody><tr><td><code>sortBy</code></td><td>String</td><td>Opsional. Kriteria sortir (default: <code>rating</code>).</td></tr><tr><td><code>order</code></td><td>String</td><td>Opsional. Urutan (<code>asc</code> atau <code>desc</code>, default: <code>desc</code>).</td></tr><tr><td><code>season</code>, <code>year</code></td><td>String, Integer</td><td>Opsional. Filter berdasarkan musim/tahun.</td></tr></tbody></table>
-            <div class="response-container" id="res-anime-sort">
-                <h4>Contoh Respon (Struktur sama seperti /api/anime)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      <h3>Urutkan Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-sort"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/anime/sort</div>
+      <p>Mengambil daftar anime yang diurutkan. Opsi sortir valid: <code>rating</code>, <code>title</code>,
+        <code>episodes</code>, <code>airdates</code>.
+      </p>
+      <h4>Parameter Kueri</h4>
+      <table>
+        <tbody>
+          <tr>
+            <td><code>sortBy</code></td>
+            <td>String</td>
+            <td>Opsional. Kriteria sortir (default: <code>rating</code>).</td>
+          </tr>
+          <tr>
+            <td><code>order</code></td>
+            <td>String</td>
+            <td>Opsional. Urutan (<code>asc</code> atau <code>desc</code>, default: <code>desc</code>).</td>
+          </tr>
+          <tr>
+            <td><code>season</code>, <code>year</code></td>
+            <td>String, Integer</td>
+            <td>Opsional. Filter berdasarkan musim/tahun.</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="response-container" id="res-anime-sort">
+        <h4>Contoh Respon (Struktur sama seperti /api/anime)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [ ... data anime terurut ... ],
   "<span class="key">"total"</span>": <span class="number">96</span>,
@@ -436,15 +547,16 @@
   "<span class="key">"order"</span>": <span class="string">"desc"</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
+      </div>
 
-            <h3>Cari Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-search"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime/search/:title</div>
-            <p>Mencari anime berdasarkan judul. Minimal 2 karakter.</p>
-            <div class="response-container" id="res-anime-search">
-                <h4>Contoh Respon (untuk <code>/api/anime/search/One-Punch</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      <h3>Cari Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-search"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/anime/search/:title</div>
+      <p>Mencari anime berdasarkan judul. Minimal 2 karakter.</p>
+      <div class="response-container" id="res-anime-search">
+        <h4>Contoh Respon (untuk <code>/api/anime/search/One-Punch</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [
     {
@@ -456,29 +568,31 @@
   "<span class="key">"total"</span>": <span class="number">1</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Filter Anime berdasarkan Status</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-filter"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime/filter/status/:status</div>
-            <p>Mendapatkan anime yang cocok dengan status tertentu (mis. <code>ongoing</code>, <code>upcoming</code>).</p>
-            <div class="response-container" id="res-anime-filter">
-                <h4>Contoh Respon (untuk <code>/api/anime/filter/status/ongoing</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Filter Anime berdasarkan Status</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-filter"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/anime/filter/status/:status</div>
+      <p>Mendapatkan anime yang cocok dengan status tertentu (mis. <code>ongoing</code>, <code>upcoming</code>).</p>
+      <div class="response-container" id="res-anime-filter">
+        <h4>Contoh Respon (untuk <code>/api/anime/filter/status/ongoing</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [ ... data anime ongoing ... ],
   "<span class="key">"total"</span>": <span class="number">30</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Dapatkan Anime berdasarkan ID</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-by-id"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/anime/:id</div>
-            <p>Mendapatkan detail anime tunggal dari daftar cache.</p>
-            <div class="response-container" id="res-anime-by-id">
-                <h4>Contoh Respon (untuk <code>/api/anime/11382</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Dapatkan Anime berdasarkan ID</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-by-id"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/anime/:id</div>
+      <p>Mendapatkan detail anime tunggal dari daftar cache.</p>
+      <div class="response-container" id="res-anime-by-id">
+        <h4>Contoh Respon (untuk <code>/api/anime/11382</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"11382"</span>,
@@ -487,35 +601,38 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Refresh Cache Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-anime-refresh"><span class="toggle-icon">[ + ]</span><span class="method post">POST</span> /api/anime/refresh</div>
-            <p>Memaksa server untuk melakukan scrape ulang data anime.</p>
-            <div class="response-container" id="res-anime-refresh">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Refresh Cache Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-anime-refresh"><span class="toggle-icon">[ + ]</span><span
+          class="method post">POST</span> /api/anime/refresh</div>
+      <p>Memaksa server untuk melakukan scrape ulang data anime.</p>
+      <div class="response-container" id="res-anime-refresh">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"message"</span>": <span class="string">"Cache refreshed successfully"</span>,
   "<span class="key">"data"</span>": [ ... data anime baru ... ],
   "<span class="key">"total"</span>": <span class="number">96</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-        </section>
+      </div>
+    </section>
 
-        <section id="anime-detail">
-            <h2>Anime (Detail)</h2>
-            <p>Endpoint ini melakukan scrape langsung ke halaman detail anime di LiveChart untuk mendapatkan informasi yang lebih kaya.</p>
-            
-            <h3>Dapatkan Detail Lengkap</h3>
-            <div class="endpoint-url interactive" data-target="#res-detail-get"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/detail/:id</div>
-            <p>Mengambil data detail lengkap untuk sebuah anime berdasarkan ID-nya.</p>
-            <div class="response-container" id="res-detail-get">
-                <h4>Contoh Respon (dari <code>DETAIL_SCRAPER.md</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+    <section id="anime-detail">
+      <h2>Anime (Detail)</h2>
+      <p>Endpoint ini melakukan scrape langsung ke halaman detail anime di LiveChart untuk mendapatkan informasi yang
+        lebih kaya.</p>
+
+      <h3>Dapatkan Detail Lengkap</h3>
+      <div class="endpoint-url interactive" data-target="#res-detail-get"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/detail/:id</div>
+      <p>Mengambil data detail lengkap untuk sebuah anime berdasarkan ID-nya.</p>
+      <div class="response-container" id="res-detail-get">
+        <h4>Contoh Respon (dari <code>DETAIL_SCRAPER.md</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"12692"</span>,
@@ -541,15 +658,16 @@
   "<span class="key">"cached"</span>": <span class="boolean">false</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
+      </div>
 
-            <h3>Dapatkan Sinopsis</h3>
-            <div class="endpoint-url interactive" data-target="#res-detail-synopsis"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/detail/:id/synopsis</div>
-            <p>Hanya mengembalikan ID, judul, dan sinopsis.</p>
-            <div class="response-container" id="res-detail-synopsis">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      <h3>Dapatkan Sinopsis</h3>
+      <div class="endpoint-url interactive" data-target="#res-detail-synopsis"><span class="toggle-icon">[ +
+          ]</span><span class="method get">GET</span> /api/detail/:id/synopsis</div>
+      <p>Hanya mengembalikan ID, judul, dan sinopsis.</p>
+      <div class="response-container" id="res-detail-synopsis">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"12692"</span>,
@@ -558,15 +676,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Dapatkan Info Streaming</h3>
-            <div class="endpoint-url interactive" data-target="#res-detail-streaming"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/detail/:id/streaming</div>
-            <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal.</p>
-            <div class="response-container" id="res-detail-streaming">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Dapatkan Info Streaming</h3>
+      <div class="endpoint-url interactive" data-target="#res-detail-streaming"><span class="toggle-icon">[ +
+          ]</span><span class="method get">GET</span> /api/detail/:id/streaming</div>
+      <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal.</p>
+      <div class="response-container" id="res-detail-streaming">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"12692"</span>,
@@ -576,15 +695,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Dapatkan Statistik</h3>
-            <div class="endpoint-url interactive" data-target="#res-detail-stats"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/detail/:id/stats</div>
-            <p>Hanya mengembalikan ID, judul, dan data terkait statistik (rating, status, episode).</p>
-            <div class="response-container" id="res-detail-stats">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Dapatkan Statistik</h3>
+      <div class="endpoint-url interactive" data-target="#res-detail-stats"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/detail/:id/stats</div>
+      <p>Hanya mengembalikan ID, judul, dan data terkait statistik (rating, status, episode).</p>
+      <div class="response-container" id="res-detail-stats">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"12692"</span>,
@@ -597,20 +717,21 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-        </section>
+      </div>
+    </section>
 
-        <section id="movie-list">
-            <h2>Movie (Daftar)</h2>
-            <p>Alias <code>/api/movie</code> dan <code>/api/movies</code> keduanya berfungsi.</p>
-            
-            <h3>Dapatkan Semua Movie</h3>
-            <div class="endpoint-url interactive" data-target="#res-movie-list"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/movies</div>
-            <p>Mengambil daftar semua movie untuk musim/tahun yang ditentukan.</p>
-            <div class="response-container" id="res-movie-list">
-                <h4>Contoh Respon (dari <code>MOVIE_SCRAPER.md</code>)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+    <section id="movie-list">
+      <h2>Movie (Daftar)</h2>
+      <p>Alias <code>/api/movie</code> dan <code>/api/movies</code> keduanya berfungsi.</p>
+
+      <h3>Dapatkan Semua Movie</h3>
+      <div class="endpoint-url interactive" data-target="#res-movie-list"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/movies</div>
+      <p>Mengambil daftar semua movie untuk musim/tahun yang ditentukan.</p>
+      <div class="response-container" id="res-movie-list">
+        <h4>Contoh Respon (dari <code>MOVIE_SCRAPER.md</code>)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": [
     {
@@ -629,39 +750,41 @@
   "<span class="key">"type"</span>": <span class="string">"movie"</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
+      </div>
 
-            <h3>Urutkan Movie</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/sort</div>
-            <p>Mengurutkan daftar movie. Parameter sama dengan <code>/api/anime/sort</code>.</p>
-            
-            <h3>Refresh Cache Movie</h3>
-            <div class="endpoint-url interactive" data-target="#res-movie-refresh"><span class="toggle-icon">[ + ]</span><span class="method post">POST</span> /api/movies/refresh</div>
-            <p>Memaksa scrape ulang data movie.</p>
-            <div class="response-container" id="res-movie-refresh">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      <h3>Urutkan Movie</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/movies/sort</div>
+      <p>Mengurutkan daftar movie. Parameter sama dengan <code>/api/anime/sort</code>.</p>
+
+      <h3>Refresh Cache Movie</h3>
+      <div class="endpoint-url interactive" data-target="#res-movie-refresh"><span class="toggle-icon">[ + ]</span><span
+          class="method post">POST</span> /api/movies/refresh</div>
+      <p>Memaksa scrape ulang data movie.</p>
+      <div class="response-container" id="res-movie-refresh">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"message"</span>": <span class="string">"Movie cache refreshed successfully"</span>,
   "<span class="key">"data"</span>": [ ... data movie baru ... ],
   "<span class="key">"total"</span>": <span class="number">15</span>,
   "<span class="key">"type"</span>": <span class="string">"movie"</span>
 }</code></pre>
-            </div>
-        </section>
+      </div>
+    </section>
 
-        <section id="movie-detail">
-            <h2>Movie (Detail)</h2>
-            <p>Mengambil detail spesifik untuk movie.</p>
+    <section id="movie-detail">
+      <h2>Movie (Detail)</h2>
+      <p>Mengambil detail spesifik untuk movie.</p>
 
-            <h3>Dapatkan Detail Movie Lengkap</h3>
-            <div class="endpoint-url interactive" data-target="#res-movie-detail-get"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/movies/detail/:id</div>
-            <p>Mengambil data detail lengkap untuk sebuah movie berdasarkan ID-nya.</p>
-            <div class="response-container" id="res-movie-detail-get">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      <h3>Dapatkan Detail Movie Lengkap</h3>
+      <div class="endpoint-url interactive" data-target="#res-movie-detail-get"><span class="toggle-icon">[ +
+          ]</span><span class="method get">GET</span> /api/movies/detail/:id</div>
+      <p>Mengambil data detail lengkap untuk sebuah movie berdasarkan ID-nya.</p>
+      <div class="response-container" id="res-movie-detail-get">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"id"</span>": <span class="string">"movie-12345"</span>,
@@ -679,62 +802,63 @@
   },
   "<span class="key">"cached"</span>": <span class="boolean">false</span>
 }</code></pre>
-            </div>
-            
-            <h3>Dapatkan Sinopsis Movie</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/synopsis</div>
-            <p>Hanya mengembalikan ID, judul, dan sinopsis movie.</p>
-            
-            <h3>Dapatkan Info Streaming Movie</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/streaming</div>
-            <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal movie.</p>
-            
-            <h3>Dapatkan Statistik Movie</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/stats</div>
-            <p>Hanya mengembalikan ID, judul, dan data terkait statistik movie.</p>
-        </section>
+      </div>
 
-        <section id="ova-list">
-            <h2>OVA (Daftar)</h2>
-            <p>Alias <code>/api/ova</code> dan <code>/api/ovas</code> keduanya berfungsi.</p>
-            
-            <h3>Dapatkan Semua OVA</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/ovas</div>
-            <p>Mengambil daftar semua OVA untuk musim/tahun yang ditentukan.</p>
+      <h3>Dapatkan Sinopsis Movie</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/synopsis</div>
+      <p>Hanya mengembalikan ID, judul, dan sinopsis movie.</p>
 
-            <h3>Urutkan OVA</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/ovas/sort</div>
-            <p>Mengurutkan daftar OVA. Parameter sama dengan <code>/api/anime/sort</code>.</p>
-            
-            <h3>Refresh Cache OVA</h3>
-            <div class="endpoint-url"><span class="method post">POST</span> /api/ovas/refresh</div>
-            <p>Memaksa scrape ulang data OVA.</p>
-        </section>
+      <h3>Dapatkan Info Streaming Movie</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/streaming</div>
+      <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal movie.</p>
 
-        <section id="all-list">
-            <h2>Semua (Daftar)</h2>
-            <p>Mengambil semua entri (TV, Movie, OVA) dari halaman <code>/all</code>.</p>
-            
-            <h3>Dapatkan Semua Entri</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/all</div>
-            <p>Mengambil daftar semua entri untuk musim/tahun yang ditentukan.</p>
+      <h3>Dapatkan Statistik Movie</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/stats</div>
+      <p>Hanya mengembalikan ID, judul, dan data terkait statistik movie.</p>
+    </section>
 
-            <h3>Refresh Cache Semua</h3>
-            <div class="endpoint-url"><span class="method post">POST</span> /api/all/refresh</div>
-            <p>Memaksa scrape ulang data 'all'.</p>
-        </section>
-        
-        <section id="statistik">
-            <h2>Statistik</h2>
-            <p>Menghasilkan statistik agregat berdasarkan data yang di-scrape.</p>
-            
-            <h3>Total Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-stats-total"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/stats/total-anime</div>
-            <p>Mengembalikan jumlah total anime, rata-rata rating, dan rincian status.</p>
-            <div class="response-container" id="res-stats-total">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+    <section id="ova-list">
+      <h2>OVA (Daftar)</h2>
+      <p>Alias <code>/api/ova</code> dan <code>/api/ovas</code> keduanya berfungsi.</p>
+
+      <h3>Dapatkan Semua OVA</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/ovas</div>
+      <p>Mengambil daftar semua OVA untuk musim/tahun yang ditentukan.</p>
+
+      <h3>Urutkan OVA</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/ovas/sort</div>
+      <p>Mengurutkan daftar OVA. Parameter sama dengan <code>/api/anime/sort</code>.</p>
+
+      <h3>Refresh Cache OVA</h3>
+      <div class="endpoint-url"><span class="method post">POST</span> /api/ovas/refresh</div>
+      <p>Memaksa scrape ulang data OVA.</p>
+    </section>
+
+    <section id="all-list">
+      <h2>Semua (Daftar)</h2>
+      <p>Mengambil semua entri (TV, Movie, OVA) dari halaman <code>/all</code>.</p>
+
+      <h3>Dapatkan Semua Entri</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/all</div>
+      <p>Mengambil daftar semua entri untuk musim/tahun yang ditentukan.</p>
+
+      <h3>Refresh Cache Semua</h3>
+      <div class="endpoint-url"><span class="method post">POST</span> /api/all/refresh</div>
+      <p>Memaksa scrape ulang data 'all'.</p>
+    </section>
+
+    <section id="statistik">
+      <h2>Statistik</h2>
+      <p>Menghasilkan statistik agregat berdasarkan data yang di-scrape.</p>
+
+      <h3>Total Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-stats-total"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/stats/total-anime</div>
+      <p>Mengembalikan jumlah total anime, rata-rata rating, dan rincian status.</p>
+      <div class="response-container" id="res-stats-total">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"total"</span>": <span class="number">96</span>,
@@ -750,15 +874,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Statistik per Genre</h3>
-            <div class="endpoint-url interactive" data-target="#res-stats-genre"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/stats/by-genre</div>
-            <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per genre.</p>
-            <div class="response-container" id="res-stats-genre">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Statistik per Genre</h3>
+      <div class="endpoint-url interactive" data-target="#res-stats-genre"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/stats/by-genre</div>
+      <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per genre.</p>
+      <div class="response-container" id="res-stats-genre">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"total"</span>": <span class="number">25</span>,
@@ -779,15 +904,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Statistik per Studio</h3>
-            <div class="endpoint-url interactive" data-target="#res-stats-studio"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/stats/by-studio</div>
-            <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per studio.</p>
-            <div class="response-container" id="res-stats-studio">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Statistik per Studio</h3>
+      <div class="endpoint-url interactive" data-target="#res-stats-studio"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/stats/by-studio</div>
+      <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per studio.</p>
+      <div class="response-container" id="res-stats-studio">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"total"</span>": <span class="number">40</span>,
@@ -805,15 +931,16 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-            
-            <h3>Statistik per Musim</h3>
-            <div class="endpoint-url interactive" data-target="#res-stats-season"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/stats/by-season</div>
-            <p>Mengembalikan statistik untuk semua 4 musim di tahun berjalan.</p>
-            <div class="response-container" id="res-stats-season">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Statistik per Musim</h3>
+      <div class="endpoint-url interactive" data-target="#res-stats-season"><span class="toggle-icon">[ + ]</span><span
+          class="method get">GET</span> /api/stats/by-season</div>
+      <p>Mengembalikan statistik untuk semua 4 musim di tahun berjalan.</p>
+      <div class="response-container" id="res-stats-season">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">true</span>,
   "<span class="key">"data"</span>": {
     "<span class="key">"year"</span>": <span class="number">2025</span>,
@@ -830,21 +957,24 @@
   },
   "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
 }</code></pre>
-            </div>
-        </section>
+      </div>
+    </section>
 
-        <section id="export">
-            <h2>Export JSON</h2>
-            <p>Mengekspor data detail ke file JSON yang dapat diunduh.</p>
-            
-            <h3>Export Satu Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-export-anime-single"><span class="toggle-icon">[ + ]</span><span class="method get">GET</span> /api/detail/:id/export</div>
-            <p>Mengunduh file JSON berisi detail lengkap untuk satu anime.</p>
-            <div class="response-container" id="res-export-anime-single">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <p><strong>Content-Disposition:</strong> <code>attachment; filename="anime_12692_SPY_x_FAMILY_Season_3.json"</code></p>
-                <pre><code class="language-json json">{
+    <section id="export">
+      <h2>Export JSON</h2>
+      <p>Mengekspor data detail ke file JSON yang dapat diunduh.</p>
+
+      <h3>Export Satu Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-export-anime-single"><span class="toggle-icon">[ +
+          ]</span><span class="method get">GET</span> /api/detail/:id/export</div>
+      <p>Mengunduh file JSON berisi detail lengkap untuk satu anime.</p>
+      <div class="response-container" id="res-export-anime-single">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <p><strong>Content-Disposition:</strong>
+          <code>attachment; filename="anime_12692_SPY_x_FAMILY_Season_3.json"</code>
+        </p>
+        <pre><code class="language-json json">{
   "<span class="key">"exportedAt"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>,
   "<span class="key">"source"</span>": <span class="string">"LiveChart API"</span>,
   "<span class="key">"anime"</span>": {
@@ -853,20 +983,21 @@
     ...
   }
 }</code></pre>
-            </div>
-            
-            <h3>Export Banyak Anime</h3>
-            <div class="endpoint-url interactive" data-target="#res-export-anime-multi"><span class="toggle-icon">[ + ]</span><span class="method post">POST</span> /api/detail/export-multiple</div>
-            <p>Mengunduh file JSON berisi array detail anime. Maksimal 50 ID per request.</p>
-            <h4>Parameter Body (JSON)</h4>
-            <pre><code class="language-json json">{
+      </div>
+
+      <h3>Export Banyak Anime</h3>
+      <div class="endpoint-url interactive" data-target="#res-export-anime-multi"><span class="toggle-icon">[ +
+          ]</span><span class="method post">POST</span> /api/detail/export-multiple</div>
+      <p>Mengunduh file JSON berisi array detail anime. Maksimal 50 ID per request.</p>
+      <h4>Parameter Body (JSON)</h4>
+      <pre><code class="language-json json">{
   "<span class="key">"ids"</span>": [<span class="string">"12692"</span>, <span class="string">"11382"</span>, <span class="string">"12697"</span>]
 }</code></pre>
-            <div class="response-container" id="res-export-anime-multi">
-                <h4>Contoh Respon</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
-                <p><strong>Content-Disposition:</strong> <code>attachment; filename="anime_export_1700000000000.json"</code></p>
-                <pre><code class="language-json json">{
+      <div class="response-container" id="res-export-anime-multi">
+        <h4>Contoh Respon</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-ok">200 OK</span></div>
+        <p><strong>Content-Disposition:</strong> <code>attachment; filename="anime_export_1700000000000.json"</code></p>
+        <pre><code class="language-json json">{
   "<span class="key">"exportedAt"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>,
   "<span class="key">"source"</span>": <span class="string">"LiveChart API"</span>,
   "<span class="key">"totalAnime"</span>": <span class="number">3</span>,
@@ -876,99 +1007,113 @@
     { "<span class="key">"id"</span>": <span class="string">"12697"</span>, ... }
   ]
 }</code></pre>
-            </div>
-            
-            <h3>Contoh Error Export</h3>
-            <div class="endpoint-url interactive" data-target="#res-export-anime-error"><span class="toggle-icon">[ + ]</span><span class="method post">POST</span> /api/detail/export-multiple</div>
-            <p>Contoh respons jika body request tidak valid (berdasarkan <code>EXPORT_JSON.md</code>).</p>
-            <h4>Parameter Body (JSON)</h4>
-            <pre><code class="language-json json">{ }</code></pre>
-            <div class="response-container" id="res-export-anime-error">
-                <h4>Contoh Respon (Error)</h4>
-                <div class="status-code"><strong>Status:</strong> <span class="status-error">400 Bad Request</span></div>
-                <pre><code class="language-json json">{
+      </div>
+
+      <h3>Contoh Error Export</h3>
+      <div class="endpoint-url interactive" data-target="#res-export-anime-error"><span class="toggle-icon">[ +
+          ]</span><span class="method post">POST</span> /api/detail/export-multiple</div>
+      <p>Contoh respons jika body request tidak valid (berdasarkan <code>EXPORT_JSON.md</code>).</p>
+      <h4>Parameter Body (JSON)</h4>
+      <pre><code class="language-json json">{ }</code></pre>
+      <div class="response-container" id="res-export-anime-error">
+        <h4>Contoh Respon (Error)</h4>
+        <div class="status-code"><strong>Status:</strong> <span class="status-error">400 Bad Request</span></div>
+        <pre><code class="language-json json">{
   "<span class="key">"success"</span>": <span class="boolean">false</span>,
   "<span class="key">"error"</span>": <span class="string">"Array of anime IDs diperlukan dalam request body"</span>,
   "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>
 }</code></pre>
-            </div>
+      </div>
 
-            <h3>Export Satu Movie</h3>
-            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/export</div>
-            <p>Mengunduh file JSON berisi detail lengkap untuk satu movie.</p>
+      <h3>Export Satu Movie</h3>
+      <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/export</div>
+      <p>Mengunduh file JSON berisi detail lengkap untuk satu movie.</p>
 
-            <h3>Export Banyak Movie</h3>
-            <div class="endpoint-url"><span class="method post">POST</span> /api/movies/detail/export-multiple</div>
-            <p>Mengunduh file JSON berisi array detail movie.</p>
-        </section>
-    </main>
+      <h3>Export Banyak Movie</h3>
+      <div class="endpoint-url"><span class="method post">POST</span> /api/movies/detail/export-multiple</div>
+      <p>Mengunduh file JSON berisi array detail movie.</p>
+    </section>
+  </main>
 
-    <script>
-        // Skrip sederhana untuk menyorot link nav yang aktif saat scroll
-        document.addEventListener('DOMContentLoaded', () => {
-            const sections = document.querySelectorAll('main section');
-            const navLinks = document.querySelectorAll('nav.sidebar a');
+  <script>
+    // Skrip sederhana untuk menyorot link nav yang aktif saat scroll
+    document.addEventListener('DOMContentLoaded', () => {
+      const sections = document.querySelectorAll('main section');
+      const navLinks = document.querySelectorAll('nav.sidebar a');
 
-            // --- Nav Scroll ---
-            const makeActive = (link) => {
-                navLinks.forEach(nav => nav.classList.remove('active'));
-                const activeLink = document.querySelector(`nav.sidebar a[href="#${link}"]`);
-                if (activeLink) {
-                    activeLink.classList.add('active');
-                }
-            };
+      // --- Nav Scroll ---
+      const makeActive = (link) => {
+        navLinks.forEach(nav => nav.classList.remove('active'));
+        const activeLink = document.querySelector(`nav.sidebar a[href="#${link}"]`);
+        if (activeLink) {
+          activeLink.classList.add('active');
+        }
+      };
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        makeActive(entry.target.id);
-                    }
-                });
-            }, { threshold: 0.2, rootMargin: '0px 0px -50% 0px' });
-
-            sections.forEach(section => {
-                observer.observe(section);
-            });
-            
-            if (window.location.hash) {
-                 makeActive(window.location.hash.substring(1));
-            } else {
-                makeActive('memulai');
-            }
-            
-            // --- Sintaks highlighting JSON sederhana ---
-            document.querySelectorAll('pre code.json').forEach(block => {
-                let text = block.innerHTML;
-                text = text.replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:'); // Keys
-                text = text.replace(/: "([^"]*)"/g, ': <span class="string">"$1"</span>'); // Strings
-                text = text.replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>'); // Numbers
-                text = text.replace(/: (true|false)/g, ': <span class="boolean">$1</span>'); // Booleans
-                text = text.replace(/: (null)/g, ': <span class="null">$1</span>'); // Nulls
-                block.innerHTML = text;
-            });
-
-            // --- Toggle untuk Endpoint Interaktif ---
-            document.addEventListener('click', function(e) {
-                const trigger = e.target.closest('.endpoint-url.interactive');
-                if (!trigger) return;
-
-                const targetId = trigger.dataset.target;
-                const responseContainer = document.querySelector(targetId);
-                const icon = trigger.querySelector('.toggle-icon');
-
-                if (!responseContainer) return;
-
-                // Toggle visibility
-                responseContainer.classList.toggle('visible');
-                trigger.classList.toggle('active');
-
-                // Update ikon
-                const isVisible = responseContainer.classList.contains('visible');
-               if (icon) {
-                    icon.textContent = isVisible ? '[ - ]' : '[ + ]';
-                }
-            });
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            makeActive(entry.target.id);
+          }
         });
-    </script>
+      }, { threshold: 0.2, rootMargin: '0px 0px -50% 0px' });
+
+      sections.forEach(section => {
+        observer.observe(section);
+      });
+
+      if (window.location.hash) {
+        makeActive(window.location.hash.substring(1));
+      } else {
+        makeActive('memulai');
+      }
+
+      // --- Sintaks highlighting JSON sederhana ---
+      document.querySelectorAll('pre code.json').forEach(block => {
+        let text = block.innerHTML;
+        text = text.replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:'); // Keys
+        text = text.replace(/: "([^"]*)"/g, ': <span class="string">"$1"</span>'); // Strings
+        text = text.replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>'); // Numbers
+        text = text.replace(/: (true|false)/g, ': <span class="boolean">$1</span>'); // Booleans
+        text = text.replace(/: (null)/g, ': <span class="null">$1</span>'); // Nulls
+        block.innerHTML = text;
+      });
+
+      // --- Toggle untuk Endpoint Interaktif ---
+      document.addEventListener('click', function (e) {
+        // Handle opening endpoint in new tab
+        const openBtn = e.target.closest('.endpoint-open-btn');
+        if (openBtn) {
+          e.preventDefault();
+          e.stopPropagation();
+          const path = openBtn.dataset.path;
+          if (path) {
+            window.open('http://localhost:3000' + path, '_blank');
+          }
+          return;
+        }
+
+        const trigger = e.target.closest('.endpoint-url.interactive');
+        if (!trigger) return;
+
+        const targetId = trigger.dataset.target;
+        const responseContainer = document.querySelector(targetId);
+        const icon = trigger.querySelector('.toggle-icon');
+
+        if (!responseContainer) return;
+
+        // Toggle visibility
+        responseContainer.classList.toggle('visible');
+        trigger.classList.toggle('active');
+
+        // Update ikon
+        const isVisible = responseContainer.classList.contains('visible');
+        if (icon) {
+          icon.textContent = isVisible ? '[ - ]' : '[ + ]';
+        }
+      });
+    });
+  </script>
 </body>
+
 </html>
