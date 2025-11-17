@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi API LiveChart</title>
+    <style>
+        :root {
+            --latar: #fefefe;
+            --teks: #222;
+            --primer: #007bff;
+            --border: #ddd;
+            --latar-nav: #f9f9f9;
+            --latar-kode: #f4f4f4;
+            --kode: #c7254e;
+            --string: #080;
+            --number: #00f;
+            --key: #a31515;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            background-color: var(--latar);
+            color: var(--teks);
+            line-height: 1.6;
+        }
+
+        /* --- Sidebar Navigation --- */
+        nav.sidebar {
+            width: 280px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: var(--latar-nav);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        nav.sidebar h1 {
+            font-size: 1.5rem;
+            margin: 0 0 20px 0;
+            color: var(--primer);
+        }
+        nav.sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        nav.sidebar li {
+            margin-bottom: 5px;
+        }
+        nav.sidebar li.group-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            color: #555;
+            text-transform: uppercase;
+        }
+        nav.sidebar a {
+            text-decoration: none;
+            color: var(--teks);
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.95rem;
+        }
+        nav.sidebar a:hover {
+            background-color: var(--border);
+        }
+        nav.sidebar a.active {
+            background-color: var(--primer);
+            color: var(--latar);
+            font-weight: bold;
+        }
+
+        /* --- Main Content --- */
+        main.content {
+            margin-left: 280px;
+            padding: 40px;
+            width: calc(100% - 280px);
+            box-sizing: border-box;
+        }
+
+        section {
+            padding-top: 20px; /* Offset for fixed header, if we had one */
+            margin-bottom: 60px;
+        }
+        
+        h2 {
+            border-bottom: 2px solid var(--primer);
+            padding-bottom: 10px;
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-top: 40px;
+            margin-bottom: 15px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        /* --- Endpoint Styling --- */
+        .endpoint-url {
+            background-color: var(--latar-kode);
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 1.1rem;
+            word-break: break-all;
+        }
+        .endpoint-url .method {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: var(--latar);
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 1rem;
+        }
+        .endpoint-url .get { background-color: #007bff; }
+        .endpoint-url .post { background-color: #28a745; }
+        .endpoint-url .put { background-color: #fd7e14; }
+        .endpoint-url .delete { background-color: #dc3545; }
+
+        /* --- Code Blocks --- */
+        pre {
+            background-color: var(--latar-kode);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+            font-size: 0.95rem;
+        }
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+        pre code {
+            color: var(--teks);
+        }
+        pre.json .string { color: var(--string); }
+        pre.json .number { color: var(--number); }
+        pre.json .key { color: var(--key); }
+        pre.json .boolean, pre.json .null { color: var(--primer); }
+        
+        /* Inline code */
+        :not(pre) > code {
+            background-color: #fceef2;
+            color: var(--kode);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+
+        /* --- Tables --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px 15px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--latar-nav);
+            font-weight: bold;
+        }
+        td:first-child {
+            font-weight: bold;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            nav.sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+            main.content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <h1>API LiveChart</h1>
+        <ul>
+            <li class="group-title">Dasar</li>
+            <li><a href="#memulai">Memulai</a></li>
+            <li><a href="#info">Info Sistem</a></li>
+            
+            <li class="group-title">Anime</li>
+            <li><a href="#anime-list">Daftar Anime</a></li>
+            <li><a href="#anime-detail">Detail Anime</a></li>
+
+            <li class="group-title">Movie</li>
+            <li><a href="#movie-list">Daftar Movie</a></li>
+            <li><a href="#movie-detail">Detail Movie</a></li>
+            
+            <li class="group-title">OVA</li>
+            <li><a href="#ova-list">Daftar OVA</a></li>
+            
+            <li class="group-title">Lain-lain</li>
+            <li><a href="#all-list">Daftar Semua</a></li>
+            <li><a href="#statistik">Statistik</a></li>
+            <li><a href="#export">Export JSON</a></li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <section id="memulai">
+            <h2>Memulai</h2>
+            <p>Selamat datang di dokumentasi API LiveChart Scraper. API ini mengambil data dari <code>livechart.me</code> dan menyajikannya melalui endpoint RESTful.</p>
+            <p>Server berjalan di <code>http://localhost:3000</code>.</p>
+            
+            <h3>Instalasi</h3>
+            <pre><code>npm install</code></pre>
+
+            <h3>Menjalankan Server</h3>
+            <pre><code>npm start</code></pre>
+            
+            <h3>Struktur Respon</h3>
+            <p>Semua respon yang berhasil akan mengikuti format:</p>
+            <pre><code class="language-json json">{
+  "<span class="key">"success"</span>": <span class="boolean">true</span>,
+  "<span class="key">"data"</span>": [...],
+  "<span class="key">"total"</span>": <span class="number">96</span>,
+  "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>
+}</code></pre>
+            <p>Semua respon error akan mengikuti format:</p>
+            <pre><code class="language-json json">{
+  "<span class="key">"success"</span>": <span class="boolean">false</span>,
+  "<span class="key">"error"</span>": <span class="string">"Pesan error..."</span>,
+  "<span class="key">"timestamp"</span>": <span class="string">"2025-11-16T20:39:00.000Z"</span>
+}</code></pre>
+        </section>
+
+        <section id="info">
+            <h2>Info Sistem</h2>
+            
+            <h3>Status & Kredit API</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /</div>
+            <p>Mengembalikan status API, kredit developer, dan ringkasan endpoint.</p>
+            
+            <h3>Health Check</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/health</div>
+            <p>Endpoint standar untuk memantau status server.</p>
+            
+            <h3>Musim & Tahun Tersedia</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/info/seasons</div>
+            <p>Mendapatkan daftar musim dan tahun yang didukung (berdasarkan <code>animeController.js</code>).</p>
+            
+            <h3>Info Cache</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime/cache/info</div>
+            <p>Melihat status cache saat ini, termasuk kunci, jumlah item, dan usia cache.</p>
+        </section>
+
+        <section id="anime-list">
+            <h2>Anime (Daftar)</h2>
+            
+            <h3>Dapatkan Semua Anime</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime</div>
+            <p>Mengambil daftar semua anime TV untuk musim dan tahun tertentu. Default ke musim saat ini jika tidak ada parameter.</p>
+            
+            <h4>Parameter Kueri</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Tipe</th>
+                        <th>Deskripsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>season</code></td>
+                        <td>String</td>
+                        <td>Opsional. Musim (<code>winter</code>, <code>spring</code>, <code>summer</code>, <code>fall</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><code>year</code></td>
+                        <td>Integer</td>
+                        <td>Opsional. Tahun (mis. <code>2025</code>).</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h4>Contoh Request</h4>
+            <pre><code>curl http://localhost:3000/api/anime?season=fall&year=2025</code></pre>
+            
+            <h4>Contoh Respon (dari <code>README.md</code>)</h4>
+            <pre><code class="language-json json">{
+  "<span class="key">"success"</span>": <span class="boolean">true</span>,
+  "<span class="key">"data"</span>": [
+    {
+      "<span class="key">"id"</span>": <span class="string">"11382"</span>,
+      "<span class="key">"title"</span>": <span class="string">"One-Punch Man Season 3"</span>,
+      "<span class="key">"link"</span>": <span class="string">"https://www.livechart.me/anime/11382"</span>,
+      "<span class="key">"status"</span>": <span class="string">"Ongoing"</span>,
+      "<span class="key">"episodes"</span>": <span class="string">"EP6"</span>,
+      "<span class="key">"studio"</span>": <span class="string">"J.C.STAFF"</span>,
+      "<span class="key">"score"</span>": <span class="string">"7.47"</span>,
+      "<span class="key">"poster"</span>": <span class="string">"https://..."</span>
+    }
+  ],
+  "<span class="key">"total"</span>": <span class="number">96</span>,
+  "<span class="key">"season"</span>": <span class="string">"fall"</span>,
+  "<span class="key">"year"</span>": <span class="string">"2025"</span>,
+  "<span class="key">"cached"</span>": <span class="boolean">false</span>,
+  "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
+}</code></pre>
+
+            <h3>Urutkan Anime</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime/sort</div>
+            <p>Mengambil daftar anime yang diurutkan. Opsi sortir valid: <code>rating</code>, <code>title</code>, <code>episodes</code>, <code>airdates</code>.</p>
+            <h4>Parameter Kueri</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><code>sortBy</code></td>
+                        <td>String</td>
+                        <td>Opsional. Kriteria sortir (default: <code>rating</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><code>order</code></td>
+                        <td>String</td>
+                        <td>Opsional. Urutan (<code>asc</code> atau <code>desc</code>, default: <code>desc</code>).</td>
+                    </tr>
+                    <tr>
+                        <td><code>season</code>, <code>year</code></td>
+                        <td>String, Integer</td>
+                        <td>Opsional. Filter berdasarkan musim/tahun.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Contoh Request</h4>
+            <pre><code>curl "http://localhost:3000/api/anime/sort?sortBy=title&order=asc&season=fall&year=2025"</code></pre>
+
+            <h3>Cari Anime</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime/search/:title</div>
+            <p>Mencari anime berdasarkan judul. Minimal 2 karakter.</p>
+            <h4>Contoh Request</h4>
+            <pre><code>curl http://localhost:3000/api/anime/search/One-Punch</code></pre>
+            
+            <h3>Filter Anime berdasarkan Status</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime/filter/status/:status</div>
+            <p>Mendapatkan anime yang cocok dengan status tertentu (mis. <code>ongoing</code>, <code>upcoming</code>).</p>
+            <h4>Contoh Request</h4>
+            <pre><code>curl http://localhost:3000/api/anime/filter/status/ongoing</code></pre>
+            
+            <h3>Dapatkan Anime berdasarkan ID</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/anime/:id</div>
+            <p>Mendapatkan detail anime tunggal dari daftar cache.</p>
+            <h4>Contoh Request</h4>
+            <pre><code>curl http://localhost:3000/api/anime/11382</code></pre>
+            
+            <h3>Refresh Cache Anime</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/anime/refresh</div>
+            <p>Memaksa server untuk melakukan scrape ulang data anime untuk musim/tahun yang ditentukan (atau musim saat ini jika tidak ditentukan).</p>
+            <h4>Parameter Kueri</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><code>season</code>, <code>year</code></td>
+                        <td>String, Integer</td>
+                        <td>Opsional. Musim/tahun yang akan di-refresh.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Contoh Request</h4>
+            <pre><code>curl -X POST "http://localhost:3000/api/anime/refresh?season=fall&year=2025"</code></pre>
+        </section>
+
+        <section id="anime-detail">
+            <h2>Anime (Detail)</h2>
+            <p>Endpoint ini melakukan scrape langsung ke halaman detail anime di LiveChart untuk mendapatkan informasi yang lebih kaya. Data di-cache per ID anime selama 1 jam.</p>
+            
+            <h3>Dapatkan Detail Lengkap</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/detail/:id</div>
+            <p>Mengambil data detail lengkap untuk sebuah anime berdasarkan ID-nya.</p>
+            <h4>Contoh Request (dari <code>DETAIL_EXAMPLES.md</code>)</h4>
+            <pre><code>curl http://localhost:3000/api/detail/12692</code></pre>
+            <h4>Contoh Respon (dari <code>DETAIL_SCRAPER.md</code>)</h4>
+            <pre><code class="language-json json">{
+  "<span class="key">"success"</span>": <span class="boolean">true</span>,
+  "<span class="key">"data"</span>": {
+    "<span class="key">"id"</span>": <span class="string">"12692"</span>,
+    "<span class="key">"title"</span>": <span class="string">"SPY x FAMILY Season 3"</span>,
+    "<span class="key">"originalTitle"</span>": <span class="string">"SPY×FAMILY Season 3"</span>,
+    "<span class="key">"poster"</span>": <span class="string">"https://u.livechart.me/anime/12692/poster_image/..."</span>,
+    "<span class="key">"rating"</span>": <span class="number">8.06</span>,
+    "<span class="key">"ratingsCount"</span>": <span class="string">"473"</span>,
+    "<span class="key">"status"</span>": <span class="string">"Releasing"</span>,
+    "<span class="key">"format"</span>": <span class="string">"TV"</span>,
+    "<span class="key">"source"</span>": <span class="string">"Manga"</span>,
+    "<span class="key">"totalEpisodes"</span>": <span class="number">13</span>,
+    "<span class="key">"currentEpisode"</span>": <span class="number">8</span>,
+    "<span class="key">"runTime"</span>": <span class="string">"24m"</span>,
+    "<span class="key">"season"</span>": <span class="string">"Fall 2025"</span>,
+    "<span class="key">"premiere"</span>": <span class="string">"Oct 4, 2025"</span>,
+    "<span class="key">"studios"</span>": [<span class="string">"WIT STUDIO"</span>, <span class="string">"CloverWorks"</span>],
+    "<span class="key">"tags"</span>": [<span class="string">"Action"</span>, <span class="string">"Comedy"</span>, <span class="string">"Childcare"</span>],
+    "<span class="key">"synopsis"</span>": <span class="string">"No synopsis has been added to this title."</span>,
+    "<span class="key">"streaming"</span>": <span class="string">"Available on multiple platforms"</span>,
+    "<span class="key">"links"</span>": {
+      "<span class="key">"livechart"</span>": <span class="string">"https://www.livechart.me/anime/12692"</span>,
+      "<span class="key">"myanimelist"</span>": <span class="string">"https://myanimelist.net/anime/..."</span>,
+      "<span class="key">"anilist"</span>": <span class="string">"https://anilist.co/anime/..."</span>,
+      "<span class="key">"kitsu"</span>": <span class="string">"https://kitsu.io/anime/..."</span>,
+      "<span class="key">"imdb"</span>": <span class="boolean">null</span>
+    }
+  },
+  "<span class="key">"cached"</span>": <span class="boolean">false</span>,
+  "<span class="key">"timestamp"</span>": <span class="string">"..."</span>
+}</code></pre>
+
+            <h3>Dapatkan Sinopsis</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/detail/:id/synopsis</div>
+            <p>Hanya mengembalikan ID, judul, dan sinopsis.</p>
+            
+            <h3>Dapatkan Info Streaming</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/detail/:id/streaming</div>
+            <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal.</p>
+            
+            <h3>Dapatkan Statistik</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/detail/:id/stats</div>
+            <p>Hanya mengembalikan ID, judul, dan data terkait statistik (rating, status, episode).</p>
+        </section>
+
+        <section id="movie-list">
+            <h2>Movie (Daftar)</h2>
+            <p>Endpoint ini berfungsi identik dengan daftar Anime, tetapi mengambil dari URL <code>/movies</code> di LiveChart. Menggunakan cache key terpisah (<code>movie-{season}-{year}</code>).</p>
+            <p>Alias <code>/api/movie</code> dan <code>/api/movies</code> keduanya berfungsi.</p>
+            
+            <h3>Dapatkan Semua Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies</div>
+            <p>Mengambil daftar semua movie untuk musim/tahun yang ditentukan.</p>
+            <h4>Parameter Kueri</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><code>season</code>, <code>year</code></td>
+                        <td>String, Integer</td>
+                        <td>Opsional. Filter berdasarkan musim/tahun.</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h4>Contoh Request (dari <code>MOVIE_SCRAPER.md</code>)</h4>
+            <pre><code>curl "http://localhost:3000/api/movies?season=spring&year=2024"</code></pre>
+
+            <h3>Urutkan Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/sort</div>
+            <p>Mengurutkan daftar movie. Parameter sama dengan <code>/api/anime/sort</code>.</p>
+            
+            <h3>Refresh Cache Movie</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/movies/refresh</div>
+            <p>Memaksa scrape ulang data movie.</p>
+        </section>
+
+        <section id="movie-detail">
+            <h2>Movie (Detail)</h2>
+            <p>Endpoint ini mengambil detail spesifik untuk movie. Strukturnya sama dengan Detail Anime, tetapi menggunakan service dan controller movie (<code>movieDetailController.js</code>).</p>
+
+            <h3>Dapatkan Detail Movie Lengkap</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id</div>
+            <p>Mengambil data detail lengkap untuk sebuah movie berdasarkan ID-nya.</p>
+            
+            <h3>Dapatkan Sinopsis Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/synopsis</div>
+            <p>Hanya mengembalikan ID, judul, dan sinopsis movie.</p>
+            
+            <h3>Dapatkan Info Streaming Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/streaming</div>
+            <p>Hanya mengembalikan ID, judul, info streaming, dan link eksternal movie.</p>
+            
+            <h3>Dapatkan Statistik Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/stats</div>
+            <p>Hanya mengembalikan ID, judul, dan data terkait statistik movie.</p>
+        </section>
+
+        <section id="ova-list">
+            <h2>OVA (Daftar)</h2>
+            <p>Endpoint ini berfungsi identik dengan daftar Anime, tetapi mengambil dari URL <code>/ovas</code> di LiveChart. Menggunakan cache key terpisah (<code>ova-{season}-{year}</code>).</p>
+            <p>Alias <code>/api/ova</code> dan <code>/api/ovas</code> keduanya berfungsi.</p>
+            
+            <h3>Dapatkan Semua OVA</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/ovas</div>
+            <p>Mengambil daftar semua OVA untuk musim/tahun yang ditentukan.</p>
+            <h4>Parameter Kueri</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><code>season</code>, <code>year</code></td>
+                        <td>String, Integer</td>
+                        <td>Opsional. Filter berdasarkan musim/tahun.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Urutkan OVA</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/ovas/sort</div>
+            <p>Mengurutkan daftar OVA. Parameter sama dengan <code>/api/anime/sort</code>.</p>
+            
+            <h3>Refresh Cache OVA</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/ovas/refresh</div>
+            <p>Memaksa scrape ulang data OVA.</p>
+        </section>
+
+        <section id="all-list">
+            <h2>Semua (Daftar)</h2>
+            <p>Endpoint ini mengambil semua entri (TV, Movie, OVA) dari halaman <code>/all</code> di LiveChart.</p>
+            
+            <h3>Dapatkan Semua Entri</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/all</div>
+            <p>Mengambil daftar semua entri untuk musim/tahun yang ditentukan.</p>
+            <h4>Parameter Kueri</h4>
+            <table>
+                <tbody>
+                    <tr>
+                        <td><code>season</code>, <code>year</code></td>
+                        <td>String, Integer</td>
+                        <td>Opsional. Filter berdasarkan musim/tahun.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Refresh Cache Semua</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/all/refresh</div>
+            <p>Memaksa scrape ulang data 'all'.</p>
+        </section>
+        
+        <section id="statistik">
+            <h2>Statistik</h2>
+            <p>Endpoint ini (dari <code>statsController.js</code>) menghasilkan statistik agregat berdasarkan data yang di-scrape.</p>
+            
+            <h3>Total Anime</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/stats/total-anime</div>
+            <p>Mengembalikan jumlah total anime, rata-rata rating, dan rincian status untuk musim/tahun tertentu.</p>
+            
+            <h3>Statistik per Genre</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/stats/by-genre</div>
+            <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per genre.</p>
+            
+            <h3>Statistik per Studio</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/stats/by-studio</div>
+            <p>Mengembalikan jumlah anime, rata-rata rating, dan daftar judul per studio.</p>
+            
+            <h3>Statistik per Musim</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/stats/by-season</div>
+            <p>Mengembalikan statistik untuk semua 4 musim di tahun berjalan.</p>
+        </section>
+
+        <section id="export">
+            <h2>Export JSON</h2>
+            <p>Endpoint ini (dari <code>animeDetailController.js</code> dan <code>movieDetailController.js</code>) memungkinkan ekspor data detail ke file JSON yang dapat diunduh.</p>
+            
+            <h3>Export Satu Anime</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/detail/:id/export</div>
+            <p>Mengunduh file JSON berisi detail lengkap untuk satu anime.</p>
+            <h4>Contoh Request (dari <code>EXPORT_JSON.md</code>)</h4>
+            <pre><code>curl http://localhost:3000/api/detail/12692/export -o anime.json</code></pre>
+            
+            <h3>Export Banyak Anime</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/detail/export-multiple</div>
+            <p>Mengunduh file JSON berisi array detail anime. Maksimal 50 ID per request.</p>
+            <h4>Parameter Body (JSON)</h4>
+            <pre><code class="language-json json">{
+  "<span class="key">"ids"</span>": [<span class="string">"12692"</span>, <span class="string">"11382"</span>, <span class="string">"12697"</span>]
+}</code></pre>
+            <h4>Contoh Request (dari <code>EXPORT_JSON.md</code>)</h4>
+            <pre><code>curl -X POST http://localhost:3000/api/detail/export-multiple \
+  -H "Content-Type: application/json" \
+  -d '{"ids": ["12692", "11382", "12697"]}' \
+  -o anime_batch.json</code></pre>
+
+            <h3>Export Satu Movie</h3>
+            <div class="endpoint-url"><span class="method get">GET</span> /api/movies/detail/:id/export</div>
+            <p>Mengunduh file JSON berisi detail lengkap untuk satu movie.</p>
+
+            <h3>Export Banyak Movie</h3>
+            <div class="endpoint-url"><span class="method post">POST</span> /api/movies/detail/export-multiple</div>
+            <p>Mengunduh file JSON berisi array detail movie.</p>
+            <h4>Parameter Body (JSON)</h4>
+            <pre><code class="language-json json">{
+  "<span class="key">"ids"</span>": [<span class="string">"12345"</span>, <span class="string">"12346"</span>]
+}</code></pre>
+        </section>
+    </main>
+
+    <script>
+        // Skrip sederhana untuk menyorot link nav yang aktif saat scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('main section');
+            const navLinks = document.querySelectorAll('nav.sidebar a');
+
+            const makeActive = (link) => {
+                navLinks.forEach(nav => nav.classList.remove('active'));
+                document.querySelector(`nav.sidebar a[href="#${link}"]`)?.classList.add('active');
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        makeActive(entry.target.id);
+                    }
+                });
+            }, { threshold: 0.2, rootMargin: '0px 0px -50% 0px' });
+
+            sections.forEach(section => {
+                observer.observe(section);
+            });
+            
+            // Aktifkan link pertama saat memuat
+            if (window.location.hash) {
+                 makeActive(window.location.hash.substring(1));
+            } else {
+                makeActive('memulai');
+            }
+            
+            // Sintaks highlighting JSON sederhana
+            document.querySelectorAll('pre.json').forEach(block => {
+                let text = block.innerHTML;
+                text = text.replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:'); // Keys
+                text = text.replace(/: "([^"]*)"/g, ': <span class="string">"$1"</span>'); // Strings
+                text = text.replace(/: (\d+\.?\d*)/g, ': <span class="number">$1</span>'); // Numbers
+                text = text.replace(/: (true|false)/g, ': <span class="boolean">$1</span>'); // Booleans
+                text = text.replace(/: (null)/g, ': <span class="null">$1</span>'); // Nulls
+                block.innerHTML = text;
+            });
+        });
+    </script>
+</body>
+</html>
