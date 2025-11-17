@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const path = require('path');
 
 const app = express();
 const PORT = 3000;
@@ -8,6 +9,9 @@ const PORT = 3000;
 // Middleware untuk pretty-print JSON
 app.set('json spaces', 2);
 app.use(express.json());
+
+// Serve static files dari Web directory
+app.use(express.static(path.join(__dirname, 'Web')));
 
 // Cache untuk menyimpan data scrape
 let cachedData = null;
