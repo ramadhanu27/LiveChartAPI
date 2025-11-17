@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const animeRoutes = require('./routes/animeRoutes');
 const movieRoutes = require('./routes/movieRoutes');
 const ovaRoutes = require('./routes/ovaRoutes');
@@ -12,6 +13,9 @@ const app = express();
 // Middleware
 app.set('json spaces', 2);
 app.use(express.json());
+
+// Serve static files dari Web directory
+app.use(express.static(path.join(__dirname, '../Web')));
 
 // Root endpoint - API status dan credit
 app.get('/', (req, res) => {
