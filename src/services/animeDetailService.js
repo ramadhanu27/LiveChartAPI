@@ -1,199 +1,300 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
-const { cleanEpisodeInfo, cleanStudio } = require('../utils/dataFormatter');
-
-/**
- * Service untuk scraping detail anime dari livechart.me
- */
 
 const LIVECHART_BASE_URL = 'https://www.livechart.me';
 
+/**
+ * Helper untuk mengambil field (Format, Source, Run time, Episodes)
+ */
+function getField($, label) {
+  let value = null;
+
+  $('div').each((i, el) => {
+    const heading = $(el)
+      .find('.text-xs.text-base-content\\/75')
+      .text()
+      .trim();
+
+    if (heading === label) {
+      const raw = $(el)
+        .clone()
+        .children()
+        .remove()
+        .end()
+        .text()
+        .trim();
+      if (raw) value = raw;
+    }
+  });
+
+  return value;
+}
+
 const animeDetailService = {
-  /**
-   * Scrape detail anime berdasarkan ID
-   * @param {string} animeId - Anime ID
-   * @returns {Promise<Object>} Detail anime object
-   */
   async scrapeAnimeDetail(animeId) {
     try {
       const url = `${LIVECHART_BASE_URL}/anime/${animeId}`;
-      console.log('🔄 Fetching detail dari:', url);
+      console.log("🔄 Fetch:", url);
 
       const response = await axios.get(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-          'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'en-US,en;q=0.5',
-          'Referer': 'https://www.livechart.me/'
+          "User-Agent": "Mozilla/5.0",
+          "Accept": "text/html"
         },
-        timeout: 10000
+        timeout: 20000
       });
 
       const detail = this._parseAnimeDetail(response.data, animeId);
-      console.log(`✅ Berhasil scrape detail: ${detail.title}`);
+      console.log("✅ Parsed:", detail.title);
 
       return detail;
     } catch (error) {
-      console.error('❌ Error saat scraping detail:', error.message);
-      throw new Error(`Failed to scrape anime detail: ${error.message}`);
+      console.error("❌ Error:", error.message);
+      throw new Error("Failed to scrape anime detail: " + error.message);
     }
   },
 
-  /**
-   * Parse HTML dan ekstrak detail anime
-   * @private
-   * @param {string} html - HTML content
-   * @param {string} animeId - Anime ID
-   * @returns {Object} Detail anime object
-   */
   _parseAnimeDetail(html, animeId) {
     const $ = cheerio.load(html);
 
-    // Title - dari h1 atau div dengan class tertentu
-    const title = $('h1').first().text().trim() ||
-                 $('[class*="title"]').first().text().trim();
+    // ================================
+    // TITLE (FINAL FIX — 5 FALLBACKS)
+    // ================================
+    
 
-    // Poster image - dari img dengan alt poster atau class poster
-    const poster = $('img[alt*="poster"], img[class*="poster"]').first().attr('src') ||
-                  $('img[src*="poster"]').first().attr('src');
+    // Desktop: <span class="text-base-content">TITLE</span>
+      let title = $('div.text-xl.font-medium span.text-base-content')
+        .first()
+        .text()
+        .trim();
 
-    // Rating - dari span dengan class text-lg font-medium atau rating class
-    const ratingText = $('span.text-lg.font-medium').first().text().trim() ||
-                      $('[class*="rating"], .score').first().text().trim();
+      // Mobile: <div class="text-xl font-medium line-clamp-1">TITLE</div>
+      if (!title) {
+        title = $('div.text-xl.font-medium.line-clamp-1')
+          .first()
+          .text()
+          .trim();
+      }
+
+      // Fallback: elemen font-medium langsung
+      if (!title) {
+        title = $('div.text-xl.font-medium')
+          .first()
+          .text()
+          .trim();
+      }
+
+// Last fallback: h1
+if (!title) title = $('h1').first().text().trim() || null;
+
+    // Case 4 — fallback: h1
+    if (!title) {
+      title = $('h1').first().text().trim();
+    }
+
+    if (!title) title = null;
+
+    // ================================
+    // POSTER
+    // ================================
+    const poster =
+      $('img[alt*="poster"]').attr('src') ||
+      $('img[src*="poster"]').attr('src') ||
+      null;
+
+    // ================================
+    // RATING
+    // ================================
+    const ratingText = $('span.text-lg.font-medium').first().text().trim();
     const ratingMatch = ratingText.match(/(\d+\.?\d*)/);
     const rating = ratingMatch ? parseFloat(ratingMatch[1]) : null;
 
-    // Number of ratings - dari div dengan class text-sm text-base-content/75
-    const ratingsCountText = $('div.text-sm.text-base-content\\/75').text().trim();
-    const ratingsCountMatch = ratingsCountText.match(/(\d+)\s*ratings?/i);
-    const ratingsCount = ratingsCountMatch ? ratingsCountMatch[1] : 
-                        $('[class*="ratings"]').text().match(/(\d+)\s*ratings?/i)?.[1] || null;
+    // Ratings Count
+    const ratingsCountMatch = ratingText.match(/(\d+)\s*ratings/i);
+    const ratingsCount = ratingsCountMatch ? ratingsCountMatch[1] : null;
 
-    // Status - dari div dengan class text-sm font-medium atau text-base-content
-    const status = $('div.text-sm.font-medium').first().text().trim() ||
-                  $('div.text-sm.text-base-content').first().text().trim() ||
-                  $('[class*="status"]').first().text().trim() || 'Unknown';
+    // ================================
+    // STATUS
+    // ================================
+    let status = null;
+    const statusHeader = $('div.font-medium')
+      .filter((i, el) => $(el).text().trim() === "Status")
+      .first();
 
-    // Original title
-    const originalTitle = $('div:contains("Original title")').next().text().trim() ||
-                         $('dt:contains("Original title")').next().text().trim();
+    if (statusHeader.length) {
+      status = statusHeader.parent().text().replace("Status", "").trim();
+    }
 
-    // Format (TV, Movie, OVA, etc)
-    const format = $('div:contains("Format")').next().text().trim() ||
-                  $('dt:contains("Format")').next().text().trim() ||
-                  'Unknown';
+    // ================================
+    // ORIGINAL TITLE
+    // ================================
+    let originalTitle = null;
 
-    // Source (Manga, Light Novel, etc)
-    const source = $('div:contains("Source")').next().text().trim() ||
-                  $('dt:contains("Source")').next().text().trim() ||
-                  'Unknown';
+    $('div.text-sm').each((i, el) => {
+      const head = $(el).find('div.font-medium').text().trim();
+      if (head === "Original title") {
+        originalTitle = $(el).text().replace("Original title", "").trim();
+      }
+    });
 
-    // Episodes info
-    const episodesText = $('div:contains("Episodes")').next().text().trim() ||
-                        $('dt:contains("Episodes")').next().text().trim();
-    const episodesMatch = episodesText?.match(/(\d+)/);
-    const totalEpisodes = episodesMatch ? parseInt(episodesMatch[1]) : null;
+    // ================================
+    // FORMAT, SOURCE, RUN TIME
+    // ================================
+    const format = getField($, "Format");
 
-    // Current episode - dari span dengan class text-sm text-base-content/75 atau data-anime-details-target
-    const currentEpisodeText = $('span[data-anime-details-target*="episode"]').text().trim() ||
-                              $('span.text-sm.text-base-content\\/75').text().trim() ||
-                              $('[class*="current"], [class*="episode"]').text();
-    const currentEpisodeMatch = currentEpisodeText.match(/EP(\d+)/i);
-    const currentEpisode = currentEpisodeMatch ? parseInt(currentEpisodeMatch[1]) : null;
+    // SOURCE (dual DOM)
+    let source = getField($, "Source");
+    if (!source) {
+      const srcBlock = $('div.font-medium')
+        .filter((i, el) => $(el).text().trim() === "Source")
+        .first();
+      if (srcBlock.length)
+        source = srcBlock.parent().text().replace("Source", "").trim();
+    }
 
-    // Run time
-    const runTime = $('div:contains("Run time")').next().text().trim() ||
-                   $('dt:contains("Run time")').next().text().trim() ||
-                   'Unknown';
+    const runTime = getField($, "Run time");
 
-    // Season
-    const season = $('div:contains("Season")').next().text().trim() ||
-                  $('dt:contains("Season")').next().text().trim() ||
-                  'Unknown';
+    // ================================
+    // EPISODES
+    // ================================
+    let totalEpisodes = null;
 
-    // Premiere date
-    const premiere = $('div:contains("Premiere")').next().text().trim() ||
-                    $('dt:contains("Premiere")').next().text().trim() ||
-                    'Unknown';
+    const epRaw = getField($, "Episodes");
+    if (epRaw) {
+      const m = epRaw.match(/\/\s*(\d+|–)/);
+      if (m) totalEpisodes = m[1] === "–" ? null : parseInt(m[1]);
+    }
 
-    // Studios - dari a.ic-chip-button dengan href=/studios/
+    // ================================
+    // CURRENT EPISODE
+    // ================================
+    let currentEpisode = null;
+    const epLinkText = $('a[href*="/schedules/"] span.font-medium')
+      .first()
+      .text()
+      .trim();
+
+    const epMatch = epLinkText.match(/EP(\d+)/i);
+    if (epMatch) currentEpisode = parseInt(epMatch[1]);
+
+    // ================================
+    // SEASON + PREMIERE
+    // ================================
+    let season = null;
+    let premiere = null;
+
+    const headerText = $('[data-controller="anime-details-header"]').text();
+
+    if (headerText) {
+      const premMatch = headerText.match(/([A-Za-z]{3,9} \d{1,2}, \d{4})/);
+      if (premMatch) premiere = premMatch[1];
+
+      const seasonMatch = headerText.match(/\(([^)]+)\)/);
+      if (seasonMatch) season = seasonMatch[1];
+    }
+
+    // ================================
+    // STUDIOS
+    // ================================
     const studios = [];
-    $('a.ic-chip-button[href^="/studios/"]').each((i, el) => {
-      const studio = $(el).text().trim();
-      if (studio && !studios.includes(studio)) {
-        studios.push(studio);
-      }
-    });
-    
-    // Fallback untuk studios jika tidak ditemukan
-    if (studios.length === 0) {
-      $('div:contains("Studios")').next().find('a, span').each((i, el) => {
-        const studio = $(el).text().trim();
-        if (studio && !studios.includes(studio)) {
-          studios.push(studio);
-        }
-      });
+
+    const studioBlock = $('div.font-medium')
+      .filter((i, el) => {
+        const t = $(el).text().trim();
+        return t === "Studio" || t === "Studios";
+      })
+      .first();
+
+    if (studioBlock.length) {
+      // Style 1 — Text
+      const raw = studioBlock.parent().text().replace(/Studio[s]?/, "").trim();
+      if (raw) studios.push(raw);
+
+      // Style 2 — Chip buttons
+      studioBlock.parent().next('.flex.flex-wrap.gap-2')
+        .find('.lc-chip-button')
+        .each((i, el) => {
+          const st = $(el).text().trim();
+          if (st && !studios.includes(st)) studios.push(st);
+        });
     }
 
-    // Tags/Genres - dari a.ic-chip-button dengan href=/tags/ dan data-anime-details-target=tagchip
+    // ================================
+    // TAGS (2 STRUCTURE)
+    // ================================
     const tags = [];
-    $('a.ic-chip-button[href^="/tags/"][data-anime-details-target="tagchip"]').each((i, el) => {
-      const tag = $(el).text().trim();
-      if (tag && tag.length > 0 && tag.length < 50) {
-        tags.push(tag);
-      }
-    });
-    
-    // Fallback untuk tags jika tidak ditemukan
-    if (tags.length === 0) {
-      $('[class*="tag"], [class*="genre"], [class*="badge"]').each((i, el) => {
-        const tag = $(el).text().trim();
-        if (tag && tag.length > 0 && tag.length < 50) {
-          tags.push(tag);
+
+    const tagsBlock = $('div.font-medium')
+      .filter((i, el) => $(el).text().trim() === "Tags")
+      .first();
+
+    if (tagsBlock.length) {
+      // Style 1 — chips
+      tagsBlock.parent().next('.flex.flex-wrap.gap-2')
+        .find('.lc-chip-button')
+        .each((i, el) => {
+          const tg = $(el).text().trim();
+          if (tg && !tags.includes(tg)) tags.push(tg);
+        });
+
+      // Style 2 — plain text list
+      tagsBlock.parent().contents().each((i, el) => {
+        if (el.type === "text") {
+          const t = $(el).text().trim();
+          if (t && t !== "Tags" && t.length < 40 && !tags.includes(t)) {
+            tags.push(t);
+          }
         }
       });
     }
 
-    // Synopsis - dari div.text-italic atau div dengan class text-sm text-base-content/75
-    const synopsis = $('div.text-italic').first().text().trim() ||
-                    $('div.text-sm.text-base-content\/75[data-anime-details-target*="synopsis"]').first().text().trim() ||
-                    $('[class*="synopsis"], [class*="description"]').first().text().trim() ||
-                    $('p').first().text().trim() ||
-                    'No synopsis available';
+    // ================================
+    // SYNOPSIS
+    // ================================
+    const synopsis =
+      $('div.text-italic').first().text().trim() ||
+      $('[data-anime-details-target="synopsis"]').text().trim() ||
+      "No synopsis available";
 
-    // Streaming info
-    const streamingText = $('div:contains("Streams")').next().text().trim() ||
-                         $('dt:contains("Streams")').next().text().trim();
+    // ================================
+    // STREAMING
+    // ================================
+    const streaming = getField($, "Streams") || null;
 
-    // Links - dari a dengan href tertentu
+    // ================================
+    // LINKS
+    // ================================
     const links = {
       livechart: `${LIVECHART_BASE_URL}/anime/${animeId}`,
-      myanimelist: $('a[href*="myanimelist"]').attr('href') || null,
-      anilist: $('a[href*="anilist"]').attr('href') || null,
-      kitsu: $('a[href*="kitsu"]').attr('href') || null,
-      imdb: $('a[href*="imdb"]').attr('href') || null
+      myanimelist: $('a[href*="myanimelist.net"]').attr('href') || null,
+      anilist: $('a[href*="anilist.co"]').attr('href') || null,
+      kitsu: $('a[href*="kitsu.app"]').attr('href') || null,
+      imdb: $('a[href*="imdb.com"]').attr('href') || null
     };
 
+    // ================================
+    // RETURN CLEAN JSON
+    // ================================
     return {
       id: animeId,
-      title: title,
+      title,
       originalTitle: originalTitle || title,
-      poster: poster || null,
-      rating: rating,
-      ratingsCount: ratingsCount,
-      status: status,
-      format: format,
-      source: source,
-      totalEpisodes: totalEpisodes,
-      currentEpisode: currentEpisode,
-      runTime: runTime,
-      season: season,
-      premiere: premiere,
-      studios: studios.length > 0 ? studios : [],
-      tags: [...new Set(tags)], // Remove duplicates
-      synopsis: synopsis,
-      streaming: streamingText || 'Not available',
-      links: links
+      poster,
+      rating,
+      ratingsCount,
+      status,
+      format,
+      source,
+      totalEpisodes,
+      currentEpisode,
+      runTime,
+      season,
+      premiere,
+      studios,
+      tags,
+      synopsis,
+      streaming,
+      links
     };
   }
 };
