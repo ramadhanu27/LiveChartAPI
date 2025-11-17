@@ -1,0 +1,82 @@
+╔════════════════════════════════════════════════════════╗
+║        LiveChart API Web Demo - Quick Start             ║
+╚════════════════════════════════════════════════════════╝
+
+STEP 1: Open Terminal
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Press: Windows Key + R
+Type: cmd
+Press: Enter
+
+Then navigate to the project:
+  cd c:\Users\User\Desktop\File HTML\LiveChartAPI
+
+
+STEP 2: Start the Web Server
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Type: npm run web
+Press: Enter
+
+You should see:
+  ✅ Server running at: http://localhost:3009
+  🌐 Open in browser: http://localhost:3009
+
+
+STEP 3: Open in Browser
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Open your browser and go to:
+  http://localhost:3009
+
+That's it! 🎉
+
+
+FEATURES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✨ Browse anime by season, year, and rating
+🔍 Search for anime by title
+📊 View detailed anime information
+🌙 Toggle between light and dark modes
+📱 Responsive design (works on mobile too)
+⚡ Real-time API status indicator
+
+
+TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+❌ "Port 3009 already in use"
+   → Close other applications using that port
+   → Or edit server.js and change PORT to 3010, 3011, etc.
+
+❌ "Error loading data"
+   → Make sure you're using http://localhost:3009
+   → NOT file:///C:/Users/...
+
+❌ "API is Offline"
+   → Check your internet connection
+   → Verify the API is online:
+     https://live-chart-api.vercel.app/api/health
+
+❌ "Cannot find module"
+   → Run: npm install
+
+
+TO STOP THE SERVER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Press: Ctrl + C
+
+
+DOCUMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+For more help, see:
+  • START_HERE.md
+  • WEBAPI_SETUP.md
+  • TROUBLESHOOTING.md
+
+
+Enjoy! 🎬

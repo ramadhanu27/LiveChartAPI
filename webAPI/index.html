@@ -613,7 +613,8 @@
   </div>
 
   <script>
-    const API_BASE = 'https://live-chart-api.vercel.app';
+    // Use local server which proxies to the remote API
+    const API_BASE = `http://${window.location.host}`;
     let allAnime = [];
 
     // Theme Toggle

@@ -116,16 +116,16 @@ const animeDetailService = {
                     $('dt:contains("Premiere")').next().text().trim() ||
                     'Unknown';
 
-    // Studios - dari div dengan class text-lg font-medium atau data-anime-details-target
+    // Studios - dari a.ic-chip-button dengan href=/studios/
     const studios = [];
-    $('div.text-lg.font-medium[data-anime-details-target*="studio"]').find('a, span').each((i, el) => {
+    $('a.ic-chip-button[href^="/studios/"]').each((i, el) => {
       const studio = $(el).text().trim();
       if (studio && !studios.includes(studio)) {
         studios.push(studio);
       }
     });
     
-    // Fallback untuk studios
+    // Fallback untuk studios jika tidak ditemukan
     if (studios.length === 0) {
       $('div:contains("Studios")').next().find('a, span').each((i, el) => {
         const studio = $(el).text().trim();
@@ -135,16 +135,16 @@ const animeDetailService = {
       });
     }
 
-    // Tags/Genres - dari span dengan class text-sm text-base-content/75 atau badge class
+    // Tags/Genres - dari a.ic-chip-button dengan href=/tags/ dan data-anime-details-target=tagchip
     const tags = [];
-    $('span.text-sm.text-base-content\\/75[data-anime-details-target*="tag"]').each((i, el) => {
+    $('a.ic-chip-button[href^="/tags/"][data-anime-details-target="tagchip"]').each((i, el) => {
       const tag = $(el).text().trim();
       if (tag && tag.length > 0 && tag.length < 50) {
         tags.push(tag);
       }
     });
     
-    // Fallback untuk tags
+    // Fallback untuk tags jika tidak ditemukan
     if (tags.length === 0) {
       $('[class*="tag"], [class*="genre"], [class*="badge"]').each((i, el) => {
         const tag = $(el).text().trim();
@@ -154,8 +154,9 @@ const animeDetailService = {
       });
     }
 
-    // Synopsis - dari div dengan class text-sm text-base-content/75 atau description class
-    const synopsis = $('div.text-sm.text-base-content\\/75[data-anime-details-target*="synopsis"]').first().text().trim() ||
+    // Synopsis - dari div.text-italic atau div dengan class text-sm text-base-content/75
+    const synopsis = $('div.text-italic').first().text().trim() ||
+                    $('div.text-sm.text-base-content\/75[data-anime-details-target*="synopsis"]').first().text().trim() ||
                     $('[class*="synopsis"], [class*="description"]').first().text().trim() ||
                     $('p').first().text().trim() ||
                     'No synopsis available';

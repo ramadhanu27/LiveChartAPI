@@ -1,9 +1,12 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const url = require('url');
 
 const PORT = 3009;
 const WEBAPI_DIR = path.join(__dirname, 'webAPI');
+const API_BASE = 'https://live-chart-api.vercel.app';
 
 const server = http.createServer((req, res) => {
   // Enable CORS
@@ -14,6 +17,19 @@ const server = http.createServer((req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(200);
     res.end();
+    return;
+  }
+
+  // Proxy API requests to the remote API
+  if (req.url.startsWith('/api/')) {
+    const apiUrl = API_BASE + req.url;
+    https.get(apiUrl, (apiRes) => {
+      res.writeHead(apiRes.statusCode, apiRes.headers);
+      apiRes.pipe(res);
+    }).on('error', (err) => {
+      res.writeHead(500);
+      res.end(JSON.stringify({ error: 'API Error: ' + err.message }));
+    });
     return;
   }
 
